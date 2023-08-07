@@ -3,11 +3,9 @@ export async function main(ns) {
   const server = ns.args[0];
   const currentHost = ns.args[1];
 
-  if (server && ns.serverExists(server)) {
-    ns.nuke(server);
-
-    await ns.scp("scripts/intruder.js", server);
-    ns.exec("scripts/intruder.js", server, 1, server);
+  if (server && currentHost) {
+    await ns.scp("scripts/scan.js", currentHost, server);
+    ns.run("scripts/scan.js", 1, currentHost);
   }
 
   else {
