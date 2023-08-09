@@ -1,17 +1,12 @@
 /** @param {NS} ns */
 export async function main(ns) {
-  const server = ns.args[0];
+  const server = ns.getHostname();
+  
+  ns.nuke(server);
+  ns.tprint(`Breaking ${server}`);
+  await ns.sleep(1000);
 
-  if (server && ns.serverExists(server)) {
-    ns.nuke(server);
-    ns.tprint(`Breaking ${server}`);
-
-    ns.tprint(`Spawning new scanner on ${server}`)
-    ns.spawn("scripts/scan.js", 1, server);
-  }
-
-  else {
-    ns.tprint("Server DNE");
-    return
-  }
+  ns.tprint(`Spawning new scanner on ${server}`)
+  await ns.sleep(1000);
+  ns.spawn("scripts/scan.js", 1, server);
 }

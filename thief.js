@@ -1,18 +1,10 @@
 export async function main(ns) {
-  const server = ns.args[0];
-
+  const server = ns.getHostname();
   ns.tprint(`Starting on ${server}`);
+  await ns.sleep(1000);
 
-  if(server){
-
-	  while(true) {
-		  await ns.hack(server);
-      await ns.sleep(1000);
-    }
-  }
-
-  else {
-    ns.tprint("Server DNE");
-    return
+  while(true) {
+		await ns.hack(server);
+    await ns.sleep(1000);
   }
 }

@@ -1,27 +1,39 @@
 /** @param {NS} ns */
 export async function main(ns) {
-  const server = ns.args[0];
-
+  const server = ns.getHostname();
   ns.tprint(`Running scan from ${server}`)
+  await ns.sleep(1000);
+  
+  const connections = ns.scan(server);
 
-   if (server){
-    const connections = ns.scan(server);
+  for (let connection of connections){
+    ns.tprint(`Discovered ${connection} from ${server}`)
+    await ns.sleep(1000);
 
-    for (let connection of connections){
-      ns.tprint(`Discovered ${connection} from ${server}`)
+    if (ns.hasRootAccess(connection)){
+        
+      await ns.sleep(1000);
+      const isActive = ns.isRunning("scripts/thief.js", connection);
 
-      if (ns.hasRootAccess(server)){
+      if (!isActive && connection != "home"){
         ns.exec("scripts/thief_runner.js", connection, 1, connection);
 
-        await ns.sleep(3000);
-
+        while(ns.isRunning("scripts/thief_runner.js", connection)){
+          await ns.sleep(1000);
+        }
+        
         ns.exec("scripts/thief.js", connection, 1, connection);
       }
-    }
-   }
 
-   else {
-    ns.tprint("Server DNE");
-    return
-   }
+      else if (connection == "home"){
+        ns.tprint("Can't run Thief on home");
+        await ns.sleep(1000);
+      }
+
+      else {
+        ns.tprint(`Thief is already running on ${connection}`);
+        await ns.sleep(1000);
+      }
+    }
+  }
 }
