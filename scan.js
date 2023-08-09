@@ -18,7 +18,11 @@ export async function main(ns) {
 
         if (requiredPorts == 0){
           ns.tprint(`Connecting to ${connection}`);
-          await ns.scp(["scripts/break.js", "scripts/scan.js", "scripts/thief.js"], connection);
+
+          const files = ns.ls("home", ".js");
+          ns.tprint(`Uploading ${files} to ${connection}`);
+          await ns.scp(files, connection);
+            
           ns.exec("scripts/break.js", connection, 1, connection);
         }
       }
